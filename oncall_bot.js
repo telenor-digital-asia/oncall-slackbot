@@ -226,11 +226,15 @@ var getUser = function (findBy, value, callback) {
  */
 var getOnCallSlackers = function (callback) {
   var oncallSlackers = [];
+  var slackerSet = {};
   pagerDuty.getOnCalls(null, function (err, pdUsers) {
 
     async.each(pdUsers, function (pdUser, cb) {
       getUser(FIND_BY_EMAIL, pdUser.user.email, function (err, slacker) {
-        oncallSlackers.push(slacker.id);
+        if (!slackerSet[slacker.id]) {
+          slackerSet[slacker.id] = slacker.id;
+          oncallSlackers.push(slacker.id);
+        }
         cb();
       });
     }, function (err) {
